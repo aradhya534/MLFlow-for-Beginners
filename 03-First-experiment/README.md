@@ -1,82 +1,135 @@
-# Lesson 03: Your First MLflow Experiment
+<div align="center">
 
-Time to write real code. In this lesson you will train a simple classifier on the Iris flower dataset and use MLflow to record the settings, the result, and the trained model. Then you will open the MLflow interface and find them.
+<p align="center">
+  <a href="../02-Setup/README.md">⬅️ Lesson 02: Setup</a> •
+  <a href="../README.md">🏠 Home</a> •
+  <b>Lesson 03: First Experiment</b> •
+  <a href="../04-Tracking-fundamentals/README.md">Lesson 04: Fundamentals ➡️</a>
+</p>
 
-> **Operating system:** commands are for **Windows 11 with Windows PowerShell**.
->
-> **Version note:** this tutorial targets **MLflow 3.17.0**. In MLflow 3, a model is logged with `name="..."`. Many older tutorials use `artifact_path="..."` instead, so code copied from older sources may not match.
+# 🧪 Lesson 03: Your First MLflow Experiment
+### *Tracking Model Training, Hyperparameters, Metrics & Artifacts*
+
+</div>
+
+Time to write real code. In this lesson you will train a simple classifier on the Iris flower dataset and use MLflow to record the settings, the result, and the trained model. Then you will open the MLflow interface and inspect them.
+
+> [!IMPORTANT]
+> **Operating system:** Commands are written for **Windows 11 with Windows PowerShell**.
+
+> [!NOTE]
+> **Version note:** This tutorial targets **MLflow 3.17.0**. In MLflow 3, a model is logged with `name="..."`. Many older tutorials use `artifact_path="..."` instead, so code copied from older sources may not match.
 
 ---
 
-## 1. Learning objectives
+## 🎯 1. Learning objectives
 
 By the end of this lesson you will be able to:
 
-- Load a dataset and split it into training and test sets.
-- Train a simple classification model with scikit-learn.
-- Connect a script to the MLflow tracking server.
-- Create an experiment and start a run.
-- Log parameters, a metric, and a trained model.
-- Find and read the results in the MLflow interface.
+- 📊 **Load a dataset** and split it into training and test sets.
+- 🤖 **Train a simple classification model** with scikit-learn.
+- 🌐 **Connect a script** to the MLflow tracking server.
+- 📁 **Create an experiment** and start a tracked run.
+- 📝 **Log parameters, a metric, and a trained model**.
+- 🖥️ **Find and read the results** in the MLflow web interface.
 
-## 2. Prerequisites
+---
 
-- Completed [Lesson 02](../02-setup/README.md): virtual environment created, packages installed, and you can start the tracking server.
-- The Iris dataset needs no download. It is built into scikit-learn.
+## 📋 2. Prerequisites
 
-**Files reused from earlier lessons:** `requirements.txt`, the `.venv` folder, and the server command from Lesson 02.
+- Completed [Lesson 02](../02-Setup/README.md): Virtual environment created, packages installed, and you can start the tracking server.
+- The Iris dataset needs no external download; it is built into scikit-learn.
 
-**New file in this lesson:** `03-first-experiment/train.py`.
+**Files reused from earlier lessons:**
+- `requirements.txt`
+- The `.venv` environment folder
+- The server command from Lesson 02
 
-## 3. Concepts in plain English
+**New file in this lesson:**
+- `03-First-experiment/train.py`
+
+---
+
+## 💡 3. Concepts in plain English
 
 ### The Iris dataset
-
-The Iris dataset has 150 flowers from three species. Each flower has four measurements (sepal length, sepal width, petal length, petal width), and your job is to predict the species from the measurements. It is small, clean, and well known, which makes it a good first example. It is a **classification** problem: the model picks one of three classes.
+The Iris dataset contains 150 flowers across three species (*Setosa, Versicolour, Virginica*). Each flower has four measurements (sepal length, sepal width, petal length, petal width). Your task is to predict the species from those measurements. It is small, clean, and well-known, making it the ideal first example. It is a **classification** problem where the model chooses one of three classes.
 
 ### Training and test sets
-
-You split the data into two parts. The model **learns** from the training set. You then **measure** how well it does on the test set, which it has not seen. This tells you how well it is likely to do on new flowers. We use 80% of the flowers for training and 20% (30 flowers) for testing.
+You split the data into two parts:
+- The model **learns** from the **training set** (80% = 120 flowers).
+- You **evaluate** performance on the **test set** (20% = 30 flowers) that the model has never seen. This tells you how well it generalizes to new flowers.
 
 ### Accuracy
+Accuracy is the share of test flowers the model classified correctly. If it gets 29 of 30 correct, accuracy is $29 / 30 = 0.9667$ (96.67%).
 
-Accuracy is the share of test flowers the model classified correctly. If it gets 29 of 30 right, accuracy is 29 / 30 = 0.9667.
+```mermaid
+flowchart LR
+    subgraph DataPrep ["1. Data Pipeline"]
+        Iris[("🌸 Iris Dataset<br/>150 samples")] --> Split["✂️ Stratified Split<br/>80% Train / 20% Test"]
+    end
+
+    subgraph Training ["2. Model Training"]
+        Split -->|120 samples| Fit["🏋️ Fit LogisticRegression<br/>max_iter=200"]
+        Fit --> Predict["🎯 Predict on Test<br/>30 samples"]
+        Predict --> Score["📏 Accuracy Score<br/>0.9667 (29/30)"]
+    end
+
+    subgraph Tracking ["3. MLflow Tracking"]
+        Fit -.-> LogModel["📦 log_model<br/>iris_model"]
+        Score -.-> LogMetric["📊 log_metric<br/>accuracy: 0.9667"]
+        Split -.-> LogParam["⚙️ log_param<br/>max_iter, test_size..."]
+    end
+
+    subgraph ServerUI ["4. Dashboard"]
+        LogModel & LogMetric & LogParam --> UI["🖥️ MLflow Web UI<br/><code>http://127.0.0.1:5000</code>"]
+    end
+```
 
 ### What we will record in MLflow
 
 | Kind | What we log | Why |
-|------|-------------|-----|
-| Parameters | `model_type`, `max_iter`, `test_size`, `random_state` | The settings that produced this result |
-| Metric | `accuracy` | The result |
-| Model | The trained model | So we can use it later |
+|:---|:---|:---|
+| ⚙️ **Parameters** | `model_type`, `max_iter`, `test_size`, `random_state` | The exact settings that produced this result |
+| 📊 **Metric** | `accuracy` | The quantifiable performance result |
+| 📦 **Model** | The trained scikit-learn model | Stored so we can load it to make predictions later |
 
-## 4. Step-by-step instructions
+---
+
+## 🚀 4. Step-by-step instructions
 
 ### Step 1: Start the tracking server
 
-Follow Step 7 of [Lesson 02](../02-setup/README.md#step-7-start-the-mlflow-tracking-server). In **PowerShell window 2**, from the repository root, with the environment active:
+Follow Step 7 of [Lesson 02](../02-Setup/README.md#step-7-start-the-mlflow-tracking-server). In **PowerShell Window 2**, from the repository root, with the environment active:
 
 ```powershell
 mlflow server --backend-store-uri sqlite:///mlflow.db --host 127.0.0.1 --port 5000
 ```
 
-Leave this window open. If the server is already running from before, you do not need to start it again.
+> [!TIP]
+> Leave this window open. If the server is already running from before, you do not need to restart it.
+
+---
 
 ### Step 2: Create the script file
 
-Inside the repository root, create a folder named `03-first-experiment` (if you cloned the repository, it already exists). Save the code from the next section as `train.py` inside that folder, so the full path is:
+Inside the repository root, ensure you have the folder named `03-First-experiment`. Save the code from the next section as `train.py` inside that folder, so the path is:
 
 ```text
-mlflow-for-beginners\03-first-experiment\train.py
+mlflow-for-beginners\03-First-experiment\train.py
 ```
+
+---
 
 ### Step 3: Run the script
 
-Use **PowerShell window 1** (not the server window). Go to the repository root, activate the environment if needed, and run the command in [Section 8](#8-commands-to-run).
+Use **PowerShell Window 1** (the coding terminal, not the server terminal). Navigate to the repository root, make sure `(.venv)` is active, and run the command in [Section 8](#8-commands-to-run).
 
-## 5. The complete code
+---
 
-Save this as `03-first-experiment/train.py`:
+## 💻 5. The complete code
+
+Save this code as **`03-First-experiment/train.py`**:
 
 ```python
 """Lesson 03: your first MLflow experiment.
@@ -137,56 +190,53 @@ print(f"Test accuracy: {accuracy:.4f}")
 print(f"Open {TRACKING_URI} and select the 'Model training' view to see the run.")
 ```
 
-## 6. The code, section by section
+---
 
-**Imports.** `mlflow` and `mlflow.sklearn` are for tracking. The `sklearn` imports are for the data, the model, the accuracy measure, and the train/test split. All the imports are at the top, so you can see everything the script depends on.
+## 🔍 6. The code, section by section
 
-**Settings.** Values you may want to change are in capital letters at the top. This avoids typing the same value in several places.
+- **Imports:** `mlflow` and `mlflow.sklearn` are for tracking. The `sklearn` imports are for the data, the model, the accuracy measure, and the train/test split. All imports are grouped at the top so you can clearly see the dependencies.
+- **Settings:** Values you may want to tune are written in uppercase constants at the top. This avoids typing the same value in several places.
+- **Step 1: Connect:** `mlflow.set_tracking_uri(...)` points the script to your running server. Without it, MLflow would default to writing files locally. `mlflow.set_experiment(...)` chooses the experiment name and creates it if it doesn't already exist.
+- **Step 2: Load and split:** `load_iris(return_X_y=True)` returns the measurements (`X`) and the species (`y`). `train_test_split` partitions them:
+  - `test_size=0.2` reserves 20% for testing.
+  - `random_state=42` ensures the split is reproducible every time you run it.
+  - `stratify=y` guarantees the same proportion of each flower species across both splits.
+- **Step 3: The run:** `with mlflow.start_run(run_name=...):` initiates the run. Everything inside this indented block is tracked, and the run cleanly finishes when the block exits (even if an error occurs).
+  - `mlflow.log_param(...)` records hyperparameter choices.
+  - `model.fit(...)` trains the classifier.
+  - `accuracy_score(...)` tests predictions against ground-truth labels.
+  - `mlflow.log_metric("accuracy", accuracy)` saves the calculated metric.
+  - `mlflow.sklearn.log_model(sk_model=model, name="iris_model")` serializes the trained model directly to the tracking server's artifact repository.
+- **The print statements:** Output a concise terminal confirmation; they are not part of MLflow itself.
 
-**Step 1: connect.** `mlflow.set_tracking_uri(...)` tells the script where the server is. Without it, MLflow would write to a local folder instead of your server. `mlflow.set_experiment(...)` picks the experiment and creates it if it does not exist yet.
+---
 
-**Step 2: load and split.** `load_iris(return_X_y=True)` returns the measurements (`X`) and the species (`y`). `train_test_split` divides them:
+## 💾 7. Files and storage
 
-- `test_size=0.2` keeps 20% for testing.
-- `random_state=42` makes the split the same every time, so your results are repeatable.
-- `stratify=y` keeps the same mix of species in the training and test sets. Without it, a small test set could end up with too few flowers of one species.
-
-**Step 3: the run.** `with mlflow.start_run(run_name=...):` opens a run. Everything inside the indented block is recorded in that run, and the run closes automatically when the block ends, even if an error occurs.
-
-Inside the run:
-
-- `mlflow.log_param(...)` records each setting. Parameters are stored as text, so `0.2` appears as `0.2` and `200` as `200`.
-- `model.fit(...)` trains the model on the training data.
-- `accuracy_score(...)` compares the model's predictions on the test set with the true species.
-- `mlflow.log_metric("accuracy", accuracy)` records the result.
-- `mlflow.sklearn.log_model(sk_model=model, name="iris_model")` saves the trained model with the run, under the name `iris_model`. Lesson 07 shows how to load it again.
-
-**The last two lines** print a summary. They are not part of MLflow.
-
-## 7. Files and storage
-
-Nothing new is created in the lesson folder when you run the script. The script sends everything to the server, which stores the data where it was started:
+Nothing new is created inside the lesson folder when you execute the script. The script transmits everything over HTTP to the server, which stores the data where it was launched:
 
 | What | Where |
-|------|-------|
-| Parameters, metric, run information | `mlflow.db` in the repository root |
-| The saved model files | the `mlartifacts` folder in the repository root |
+|:---|:---|
+| ⚙️ Parameters, metric, run information | `mlflow.db` in the repository root |
+| 📦 Saved model artifacts | The `mlartifacts/` folder in the repository root |
 
-Both are ignored by Git.
+*(Both are ignored by Git).*
 
-## 8. Commands to run
+---
 
-In **PowerShell window 1**, from the repository root, with `(.venv)` showing:
+## ⌨️ 8. Commands to run
+
+In **PowerShell Window 1**, from the repository root, with `(.venv)` showing:
 
 ```powershell
-python 03-first-experiment\train.py
+python 03-First-experiment\train.py
 ```
 
-This runs the script. You can run it from any folder as long as you give the correct path to `train.py`, but the repository root is simplest.
+---
 
-## 9. Expected output
+## 📋 9. Expected output
 
-In the terminal, you should see something like this. The date, the experiment number, and the long run ID will be different on your machine:
+In your terminal, you should see output similar to:
 
 ```text
 2026/10/10 21:16:23 INFO mlflow.tracking.fluent: Experiment with name 'iris-first-experiment' does not exist. Creating a new experiment.
@@ -196,67 +246,84 @@ Test accuracy: 0.9667
 Open http://127.0.0.1:5000 and select the 'Model training' view to see the run.
 ```
 
-- The first line appears only the first time, when the experiment is created.
-- MLflow prints a small symbol in front of the "View run" and "View experiment" lines.
-- The experiment number depends on how many experiments already exist. In this output it is `2` because the `setup-check` experiment from Lesson 02 was created first.
-- The accuracy should be `0.9667`, which is 29 of 30 test flowers correct. Because the split is fixed with `random_state=42`, running the script again gives the same accuracy.
-
-### What to inspect in the MLflow UI
-
-Open `http://127.0.0.1:5000` and make sure **Model training** is selected in the top-left switch (see the note in [Lesson 02, Step 8](../02-setup/README.md#step-8-open-the-web-interface)).
-
-1. Find the experiment **iris-first-experiment** and open it.
-2. You should see one run named **logistic-regression-baseline**. Open it.
-3. Look for the four parameters: `model_type`, `max_iter`, `test_size`, and `random_state`.
-4. Look for the metric `accuracy`.
-5. Look for the logged model. Go back to the experiment page and open its **Models** tab. A model from this run is listed there. In the code, you saved it with `name="iris_model"`.
-6. Look at the details MLflow added on its own, such as the run's status and start time. You did not log these. MLflow records them automatically, and Lesson 04 explains more.
-
-## 10. Common errors and solutions
-
-| Problem | Cause and fix |
-|---------|---------------|
-| The script seems to freeze, then fails with `API request to http://127.0.0.1:5000/... failed` | The server is not running. Start it (Step 1) and run the script again. See [Lesson 02](../02-setup/README.md#10-common-errors-and-solutions) |
-| `ModuleNotFoundError: No module named 'mlflow'` (or `sklearn`) | The environment is not active. Run `.\.venv\Scripts\Activate.ps1` and try again |
-| `can't open file ... train.py` | You are in the wrong folder, or the path is wrong. Run `Get-Location` and check that `03-first-experiment\train.py` exists below it |
-| The web page shows "Traces", "Sessions", or "No data available" | You are in the **GenAI** view. Click **Model training** at the top-left |
-| I cannot find my experiment | Check the experiment name for typos. A different name creates a different experiment. Also check that the server was started from the repository root (Lesson 02) |
-## 11. Practice exercises
-
-1. **Run it again.** Run the script a second time. How many runs does the experiment have now? Is the accuracy the same? Why?
-2. **Change a parameter.** Set `MAX_ITER = 100`, run the script, and compare the two runs in the UI. Did the accuracy change?
-3. **Change the split.** Set `TEST_SIZE = 0.3`, run the script, and look at the `test_size` parameter in the new run.
-4. **Change the seed.** Set `RANDOM_STATE = 7`, run the script, and see whether the accuracy changes. What does that tell you about a single accuracy number from a small test set?
-
-## 12. Small challenge
-
-Create a copy of `train.py` called `train_knn.py` in the same folder. Replace `LogisticRegression` with scikit-learn's `KNeighborsClassifier` (imported from `sklearn.neighbors`), and log `n_neighbors` as a parameter instead of `max_iter`. Give it a different `run_name` and change `model_type` to match. Run it, then find both runs in the same experiment.
-
-## 13. Summary
-
-- A script connects to the server with `mlflow.set_tracking_uri(...)` and chooses an experiment with `mlflow.set_experiment(...)`.
-- `with mlflow.start_run():` opens a run, and everything logged inside belongs to it.
-- `log_param` records settings, `log_metric` records results, and `log_model` saves the trained model.
-- A fixed `random_state` makes the split, and so the result, repeatable.
-- Each time you run the script, a new run is created in the same experiment.
-- Results are viewed in the **Model training** view of the MLflow interface.
-
-## 14. Next lesson and official documentation
-
-**Next:** [Lesson 04: Understanding Experiment Tracking](../04-tracking-fundamentals/README.md) (planned). It extends this same example.
-
-Official documentation for this lesson:
-
-- [MLflow Tracking Quickstart](https://mlflow.org/docs/latest/ml/tracking/quickstart/)
-- [MLflow Tracking](https://mlflow.org/docs/latest/ml/tracking/)
-- [Tracking APIs](https://mlflow.org/docs/latest/ml/tracking/tracking-api/)
+- The first line appears only on the initial run when the experiment is created.
+- The experiment ID depends on how many experiments already exist (e.g. `2` if `setup-check` was run first).
+- The test accuracy is `0.9667` (29 of 30 test flowers correct). Because `random_state=42` is fixed, rerunning the script yields the exact same accuracy.
 
 ---
 
-## Testing status
+### 🖥️ What to inspect in the MLflow UI
+
+Open **`http://127.0.0.1:5000`** and verify **Model training** is selected in the top-left switch:
+
+1. 📂 Open the experiment **`iris-first-experiment`**.
+2. 🏃 Open the run named **`logistic-regression-baseline`**.
+3. ⚙️ Inspect the four parameters: `model_type`, `max_iter`, `test_size`, and `random_state`.
+4. 📊 Inspect the metric: `accuracy = 0.9667`.
+5. 📦 Switch to the experiment's **Models** / **Artifacts** view to inspect `iris_model`.
+6. ⏱️ Notice metadata MLflow recorded automatically (run status, execution duration, timestamp).
+
+---
+
+## ⚠️ 10. Common errors and solutions
+
+| Problem | Cause & Fix |
+|:---|:---|
+| 🥶 **Script freezes, then fails with `API request ... failed`** | The tracking server is not running. Launch it in Window 2 and rerun. See [Lesson 02](../02-Setup/README.md#10-common-errors-and-solutions). |
+| ❓ **`ModuleNotFoundError: No module named 'mlflow'` (or `sklearn`)** | Virtual environment is not activated. Run `.\.venv\Scripts\Activate.ps1`. |
+| 📁 **`can't open file ... train.py`** | You are not in the repository root or path is misspelled. Run `Get-Location` to verify. |
+| 🪟 **Web page shows "Traces", "Sessions", or "No data available"** | You are in the **GenAI** view. Switch to **Model training** at top-left. |
+| 🔍 **Cannot find experiment in UI** | Check for typos in experiment name, and ensure the server was launched from the repository root. |
+
+---
+
+## 🧠 11. Practice exercises
+
+1. **Rerun test:** Run the script a second time. How many runs does the experiment have now? Is the accuracy identical? Why?
+2. **Hyperparameter tweak:** Change `MAX_ITER = 100`, run the script, and compare the two runs in the UI. Did accuracy change?
+3. **Data partition adjustment:** Set `TEST_SIZE = 0.3`, run the script, and check the `test_size` parameter in the new run.
+4. **Random seed exploration:** Set `RANDOM_STATE = 7`, run the script, and inspect whether accuracy differs. What does this reveal about a single metric on a small dataset?
+
+---
+
+## 🏆 12. Small challenge
+
+Create a copy of `train.py` called `train_knn.py` in the same folder:
+1. Replace `LogisticRegression` with scikit-learn's `KNeighborsClassifier` (from `sklearn.neighbors`).
+2. Log `n_neighbors` as a parameter instead of `max_iter`.
+3. Set `run_name="knn-baseline"` and `model_type="KNeighborsClassifier"`.
+4. Run the script and compare both model runs side-by-side in the MLflow UI!
+
+---
+
+## 📝 13. Summary
+
+- 🔌 Connect to your server with `mlflow.set_tracking_uri(...)` and select an experiment with `mlflow.set_experiment(...)`.
+- 🏃 The context manager `with mlflow.start_run():` handles run lifecycle cleanly.
+- ⚙️ `log_param` stores inputs, `log_metric` records outputs, and `log_model` preserves trained model artifacts.
+- 🎯 Setting `random_state` guarantees reproducible splits and metrics.
+- 🔄 Every execution logs a fresh run to the experiment for effortless history tracking.
+- 🖥️ Results are browsed in the **Model training** view of the MLflow web dashboard.
+
+---
+
+## 📚 14. Next lesson and official documentation
+
+- [MLflow Tracking Quickstart](https://mlflow.org/docs/latest/ml/tracking/quickstart/)
+- [MLflow Tracking Guide](https://mlflow.org/docs/latest/ml/tracking/)
+- [Tracking APIs Reference](https://mlflow.org/docs/latest/ml/tracking/tracking-api/)
+
+<div align="center">
+  <br/>
+  <a href="../04-Tracking-fundamentals/README.md"><b>Next: Lesson 04: Understanding Experiment Tracking ➡️</b></a>
+</div>
+
+---
+
+## 🧪 Testing status
 
 | Part | Status |
-|------|--------|
-| `train.py` runs without errors or warnings against a SQLite-backed MLflow 3.17.0 server, and the logged parameters, metric, and model were read back | Run successfully on **Linux** (test environment). Accuracy `0.9667`, identical on a second run |
-| `train.py` on Windows 11 (PowerShell, Python 3.13.3) | Run successfully, reported by the author. Same output as on Linux, accuracy `0.9667`, no warnings |
-| Results in the Model training view | Confirmed by the author on Windows: the four parameters and the `accuracy` metric are shown on the run, and the model is listed in the experiment's Models tab |
+|:---|:---|
+| `train.py` runs without errors against SQLite-backed MLflow 3.17.0 server; params, metric, and model read back | ✅ **Passed on Linux** (test environment). Accuracy `0.9667`, identical on rerun |
+| `train.py` on Windows 11 (PowerShell, Python 3.13.3) | ✅ **Passed on Windows 11**, confirmed by author. Accuracy `0.9667`, no warnings |
+| Results in Model training UI view | ✅ **Confirmed on Windows 11**: All 4 parameters, metric, and model listed correctly |

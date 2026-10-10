@@ -17,3 +17,5 @@ mlruns/
 # Local settings and secrets: never commit these
 .env
 *.log
+
+articles/
