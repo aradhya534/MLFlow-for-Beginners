@@ -1,150 +1,170 @@
-# MLflow for Beginners
+# MLflow for Beginners: From Zero to Experiment Tracking
 
-**A practical, beginner-friendly guide to machine learning experiment tracking and model management.**
+A hands-on, step-by-step tutorial series that teaches you how to use [MLflow](https://mlflow.org/docs/latest/ml/) to keep track of your machine learning experiments. You start from nothing, run every example on your own computer, and finish with a small end-to-end project.
 
-Learn how to use MLflow step by step, from understanding the fundamentals to tracking experiments, comparing models, and working with saved machine learning models.
-
-No prior experience with MLflow is required.
-
-[Official MLflow Documentation](https://mlflow.org/docs/latest/) · [MLflow Tracking Quickstart](https://www.mlflow.org/docs/latest/ml/getting-started/quickstart/)
+> **Project status:** work in progress. Lesson 01 is drafted and under review. All other lessons are planned and not written yet. See [Project status](#project-status) for details.
 
 ---
 
-## Why this project?
+## Why MLflow matters
 
-Imagine training three machine learning models with different parameters. Each produces different results.
+When you train machine learning models, you quickly end up with many experiments: different settings, different data splits, different results. Without a system, it becomes hard to answer simple questions such as "Which settings gave me my best result?" or "How did I create this model file?"
 
-- Which model performed best?
-- What parameters did you use?
-- Can you reproduce the experiment later?
-- Where did you save the trained model?
+MLflow is an open-source platform that records this information for you. Its **experiment tracking** feature logs the settings (parameters), results (metrics), and output files (such as trained models) of each run, and shows them in a web interface where you can browse and compare them. You can read the official description in the [MLflow Tracking documentation](https://mlflow.org/docs/latest/ml/tracking/).
 
-Without a systematic approach, keeping track of experiments can quickly become confusing.
+## What you will learn
 
-**MLflow helps you organize and track machine learning experiments** by recording parameters, evaluation metrics, models, and other outputs. Its tracking interface makes it easier to inspect and compare your work.
+By the end of this series you will be able to:
 
-This repository introduces these concepts through practical examples that you can run on your own computer.
+- Explain what experiment tracking is and why it matters.
+- Install and run MLflow on Windows 11 using PowerShell.
+- Log parameters, metrics, tags, and models from a scikit-learn training script.
+- Use the MLflow web interface to inspect and compare runs.
+- Use autologging, and understand what it does and does not capture.
+- Compare several models in a fair way and pick one with a clear justification.
+- Load a logged model to make predictions, and understand model registration.
+- Combine everything into a small, tested, reproducible project.
 
-## What you'll learn
+## Who this is for
 
-- Understand what MLflow is and why it is useful.
-- Set up MLflow in a Python environment.
-- Create experiments and track individual runs.
-- Log parameters, metrics, and artifacts.
-- Explore experiment results using the MLflow UI.
-- Use autologging with supported machine learning libraries.
-- Compare models using evaluation metrics.
-- Save, load, and manage trained models.
-- Build a small end-to-end machine learning project.
+**Audience:** complete beginners to MLflow.
 
-## Learning roadmap
+**Prerequisites:**
 
-| Lesson | Topic | What you'll build or learn |
-|---|---|---|
-| 01 | Introduction to MLflow | Understand the concepts and terminology. |
-| 02 | Installation and setup | Run MLflow locally on Windows. |
-| 03 | Your first experiment | Train a classifier and log your first run. |
-| 04 | Tracking fundamentals | Record parameters, metrics, tags, and artifacts. |
-| 05 | Autologging | Automatically capture supported training information. |
-| 06 | Comparing experiments | Compare models and evaluate their results. |
-| 07 | Model management | Load saved models and explore model versioning. |
-| 08 | Mini project | Apply the concepts in a complete workflow. |
+- Basic Python (functions, imports, running a script).
+- Some familiarity with machine learning (what training, testing, and accuracy mean).
+- A Windows 11 computer with Python installed. Lesson 02 shows how to check this.
 
-Each lesson will include explanations, runnable code, step-by-step instructions, expected results, and exercises.
+You do **not** need any prior knowledge of MLflow or MLOps.
 
-## Who is this for?
+## Lesson roadmap
 
-This repository is designed for:
+Follow the lessons in order. Each one builds on the previous one.
 
-- Students learning machine learning and MLOps.
-- Python learners who want to improve their ML workflow.
-- Beginners who want hands-on experience with MLflow.
-- Developers who want to understand experiment tracking.
+| # | Lesson | What you will do | Status |
+|---|--------|------------------|--------|
+| 01 | [Introduction to MLflow](01-introduction/README.md) | Learn the core ideas: experiments, runs, parameters, metrics, tags, artifacts | Drafted, under review |
+| 02 | [Installation and Setup](02-setup/README.md) | Create a virtual environment, install MLflow, start the tracking server | Planned |
+| 03 | [Your First MLflow Experiment](03-first-experiment/README.md) | Train a model on the Iris dataset and log it | Planned |
+| 04 | [Understanding Experiment Tracking](04-tracking-fundamentals/README.md) | Look closely at runs, tags, artifacts, and how data is stored | Planned |
+| 05 | [Autologging](05-autologging/README.md) | Let MLflow record information automatically | Planned |
+| 06 | [Comparing Experiments](06-comparing-experiments/README.md) | Compare models fairly and choose one | Planned |
+| 07 | [Model Management](07-model-management/README.md) | Load models, make predictions, learn about the Model Registry | Planned |
+| 08 | [End-to-End Mini Project](08-mini-project/README.md) | Combine everything into a small tested project | Planned |
 
-You should have basic Python knowledge and a general idea of how machine learning models are trained. You do not need previous MLflow experience.
+Extra material (also planned): [glossary](resources/glossary.md), [troubleshooting guide](resources/troubleshooting.md), and a companion [article](article/mlflow-for-beginners.md).
 
-## Prerequisites
+> The links above point to the planned file locations. Links to lessons that are marked "Planned" will not work until those lessons are added.
 
-Before starting, you will need:
+## Quick start
 
-- Python installed on your computer.
-- A code editor, such as Visual Studio Code.
-- Basic familiarity with Python scripts and the command line.
-- A willingness to experiment, make mistakes, and learn.
+These commands are for **Windows PowerShell** and should be run from the repository folder. Lesson 02 explains each command in detail and covers common errors.
 
-**Platform:** Windows PowerShell is the primary environment used in these tutorials. Instructions for other platforms may be added later.
+```powershell
+# 1. Create a virtual environment (an isolated set of Python packages for this project)
+python -m venv .venv
 
-## Getting started
+# 2. Activate it
+.\.venv\Scripts\Activate.ps1
 
-The recommended approach is to follow the lessons in order.
+# 3. Install the exact package versions used in this tutorial
+python -m pip install -r requirements.txt
 
-1. Read [Lesson 01 — Introduction to MLflow](01-introduction/README.md).
-2. Follow [Lesson 02 — Installation and Setup](02-setup/README.md).
-3. Run your first experiment in [Lesson 03 — Your First Experiment](03-first-experiment/README.md).
+# 4. Check that everything imports
+python -c "import mlflow, sklearn, pandas, numpy; print(mlflow.__version__, sklearn.__version__, pandas.__version__, numpy.__version__)"
+```
 
-The lesson links will become available as the tutorials are added to the repository.
+If step 4 prints `3.17.0 1.9.1 3.0.6 2.5.3`, your setup matches the one used in this tutorial.
 
-## Tools and technologies
+If step 2 fails with a message about scripts being disabled, see Lesson 02 (planned) for the fix.
 
-- **Python** — machine learning implementation.
-- **MLflow** — experiment tracking and model management.
-- **scikit-learn** — beginner-friendly machine learning examples.
-- **Git and GitHub** — version control and sharing the tutorials.
+Then continue with [Lesson 01](01-introduction/README.md).
 
-The initial examples will use a small, built-in classification dataset so you can focus on learning MLflow rather than spending time collecting and cleaning data.
+## Technology stack
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Python | 3.13.3 | Programming language |
+| MLflow | 3.17.0 | Experiment tracking and model management |
+| scikit-learn | 1.9.1 | Machine learning models and the Iris dataset |
+| pandas | 3.0.6 | Data handling |
+| numpy | 2.5.3 | Numerical computing |
+
+**About these versions:** this exact combination was installed together and imported successfully on the author's Windows 11 machine. The lesson code has **not** been run yet, because the lessons are not written. This section will be updated as each lesson is tested.
+
+**Why versions are pinned:** MLflow changes between releases, and many tutorials online were written for older versions. This repository targets **MLflow 3.17.0**. If you use a different version, some code or screens may differ.
+
+> The official MLflow documentation links in this repository point to the `latest` documentation, which may describe a newer version than 3.17.0.
 
 ## Repository structure
 
+This is the planned structure. Files appear as each lesson is completed.
+
 ```text
 mlflow-for-beginners/
-├── README.md
-├── requirements.txt
+├── README.md                    <- you are here
+├── requirements.txt             <- pinned package versions
 ├── .gitignore
-├── 01-introduction/
-├── 02-setup/
-├── 03-first-experiment/
-├── 04-tracking-fundamentals/
-├── 05-autologging/
-├── 06-comparing-experiments/
-├── 07-model-management/
-├── 08-mini-project/
-├── resources/
-└── article/
+├── LICENSE
+├── 01-introduction/             <- concepts (no code to run)
+├── 02-setup/                    <- installation and tracking server
+├── 03-first-experiment/         <- first run, train.py
+├── 04-tracking-fundamentals/    <- runs, tags, artifacts, train.py
+├── 05-autologging/              <- autologging, train.py
+├── 06-comparing-experiments/    <- compare_models.py
+├── 07-model-management/         <- loading models, predict.py
+├── 08-mini-project/             <- src/ and tests/
+├── resources/                   <- glossary.md, troubleshooting.md
+├── article/                     <- companion article
+└── screenshots/                 <- real screenshots from the MLflow UI
 ```
 
-Each lesson will have its own README, with code and supporting resources where needed.
+## Teaching approach
 
-## What makes this repository different?
+- **Plain English first.** Each concept is explained without assuming MLOps knowledge.
+- **One example that grows.** Lessons 03 to 05 extend the same Iris example instead of starting a new project each time.
+- **Everything is runnable.** Each lesson lists the full code, the commands to run, and what you should see.
+- **Honest about testing.** A lesson is only marked complete after its code has actually been run. Nothing in this repository claims results that were not produced.
+- **Same format every time.** Each lesson uses the same sections: objectives, prerequisites, concepts, steps, code, expected output, common errors, exercises, and a summary.
 
-This is intended to be a learning resource, not just a collection of code snippets.
+## Official learning resources
 
-- Concepts are explained in plain English.
-- Commands are written for beginners and introduced step by step.
-- Examples build on one another.
-- Results are explored through the MLflow interface.
-- Exercises encourage you to apply what you've learned.
-- Common errors and troubleshooting tips are documented along the way.
-
-Code examples and setup instructions will be tested as the lessons are developed.
-
-## Further learning
-
-- [Official MLflow Documentation](https://mlflow.org/docs/latest/)
-- [MLflow Tracking](https://mlflow.org/docs/latest/tracking/)
-- [MLflow Tracking Quickstart](https://www.mlflow.org/docs/latest/ml/getting-started/quickstart/)
+- [MLflow documentation for machine learning](https://mlflow.org/docs/latest/ml/)
+- [MLflow Tracking](https://mlflow.org/docs/latest/ml/tracking/)
+- [MLflow Tracking Quickstart](https://mlflow.org/docs/latest/ml/tracking/quickstart/)
+- [Tracking APIs](https://mlflow.org/docs/latest/ml/tracking/tracking-api/)
+- [Tracking experiments with a local database](https://mlflow.org/docs/latest/ml/tracking/tutorials/local-database/)
+- [MLflow Model](https://mlflow.org/docs/latest/ml/model/)
+- [MLflow Model Registry](https://mlflow.org/docs/latest/ml/model-registry/)
 
 ## Project status
 
-**In progress** — tutorials, examples, and setup instructions are being developed incrementally.
+| Item | Status |
+|------|--------|
+| Repository design and dependency versions | Done |
+| Root README | Drafted, under review |
+| Lesson 01 | Drafted, under review |
+| Lessons 02 to 08 | Not started |
+| Tests for the mini project | Not started |
+| Real screenshots | Not started |
+| Companion article | Not started |
 
 ## Contributing and feedback
 
-Found an issue or have a suggestion? Feel free to open a GitHub issue or suggest an improvement. The goal is to make MLflow easier for beginners to understand and use.
+Found a mistake, an unclear explanation, or a command that does not work for you? Please open an issue and include:
+
+- The lesson and step where the problem happened.
+- Your Python and MLflow versions.
+- The full error message.
+
+Suggestions to make the lessons clearer for beginners are welcome.
 
 ## Author
 
-Created as a learning and portfolio project to explore machine learning experiment tracking, reproducibility, and MLOps fundamentals.
+- **Name:** _to be added_
+- **GitHub:** _to be added_
+- **LinkedIn:** _to be added_
 
----
+## License
 
-**Happy learning, and happy experimenting!**
+See the [LICENSE](LICENSE) file (to be added).
