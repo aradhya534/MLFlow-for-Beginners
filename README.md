@@ -167,4 +167,4 @@ Suggestions to make the lessons clearer for beginners are welcome.
 
 ## License
 
-See the [LICENSE]
+See the [LICENSE](LICENSE)
