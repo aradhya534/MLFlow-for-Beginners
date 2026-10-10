@@ -2,7 +2,7 @@
 
 A hands-on, step-by-step tutorial series that teaches you how to use [MLflow](https://mlflow.org/docs/latest/ml/) to keep track of your machine learning experiments. You start from nothing, run every example on your own computer, and finish with a small end-to-end project.
 
-> **Project status:** work in progress. Lesson 01 is drafted and under review. All other lessons are planned and not written yet. See [Project status](#project-status) for details.
+> **Project status:** work in progress. Lessons 01 to 03 are ready, and Lessons 02 and 03 have been run and tested on Windows 11. Lessons 04 to 08 are planned and not written yet. See [Project status](#project-status) for details.
 
 ---
 
@@ -43,9 +43,9 @@ Follow the lessons in order. Each one builds on the previous one.
 
 | # | Lesson | What you will do | Status |
 |---|--------|------------------|--------|
-| 01 | [Introduction to MLflow](01-introduction/README.md) | Learn the core ideas: experiments, runs, parameters, metrics, tags, artifacts | Drafted, under review |
-| 02 | [Installation and Setup](02-setup/README.md) | Create a virtual environment, install MLflow, start the tracking server | Planned |
-| 03 | [Your First MLflow Experiment](03-first-experiment/README.md) | Train a model on the Iris dataset and log it | Planned |
+| 01 | [Introduction to MLflow](01-introduction/README.md) | Learn the core ideas: experiments, runs, parameters, metrics, tags, artifacts | Ready |
+| 02 | [Installation and Setup](02-setup/README.md) | Create a virtual environment, install MLflow, start the tracking server | Ready, tested on Windows 11 |
+| 03 | [Your First MLflow Experiment](03-first-experiment/README.md) | Train a model on the Iris dataset and log it | Ready, tested on Windows 11 |
 | 04 | [Understanding Experiment Tracking](04-tracking-fundamentals/README.md) | Look closely at runs, tags, artifacts, and how data is stored | Planned |
 | 05 | [Autologging](05-autologging/README.md) | Let MLflow record information automatically | Planned |
 | 06 | [Comparing Experiments](06-comparing-experiments/README.md) | Compare models fairly and choose one | Planned |
@@ -54,7 +54,7 @@ Follow the lessons in order. Each one builds on the previous one.
 
 Extra material (also planned): [glossary](resources/glossary.md), [troubleshooting guide](resources/troubleshooting.md), and a companion [article](article/mlflow-for-beginners.md).
 
-> The links above point to the planned file locations. Links to lessons that are marked "Planned" will not work until those lessons are added.
+> Links to lessons marked "Planned" will not work until those lessons are added.
 
 ## Quick start
 
@@ -76,9 +76,23 @@ python -c "import mlflow, sklearn, pandas, numpy; print(mlflow.__version__, skle
 
 If step 4 prints `3.17.0 1.9.1 3.0.6 2.5.3`, your setup matches the one used in this tutorial.
 
-If step 2 fails with a message about scripts being disabled, see Lesson 02 (planned) for the fix.
+If step 2 fails with a message about scripts being disabled, see the [common errors in Lesson 02](02-setup/README.md#10-common-errors-and-solutions) for the fix.
 
-Then continue with [Lesson 01](01-introduction/README.md).
+To see MLflow working straight away, open a **second** PowerShell window, activate the environment there too, and start the tracking server from the repository folder:
+
+```powershell
+mlflow server --backend-store-uri sqlite:///mlflow.db --host 127.0.0.1 --port 5000
+```
+
+Then, in your first window, run the example from Lesson 03:
+
+```powershell
+python 03-first-experiment\train.py
+```
+
+Open `http://127.0.0.1:5000` in your browser and select **Model training** at the top-left to see your first run.
+
+For the full explanation, start with [Lesson 01](01-introduction/README.md).
 
 ## Technology stack
 
@@ -90,7 +104,7 @@ Then continue with [Lesson 01](01-introduction/README.md).
 | pandas | 3.0.6 | Data handling |
 | numpy | 2.5.3 | Numerical computing |
 
-**About these versions:** this exact combination was installed together and imported successfully on the author's Windows 11 machine. The lesson code has **not** been run yet, because the lessons are not written. This section will be updated as each lesson is tested.
+**About these versions:** this exact combination was installed together and imported successfully on the author's Windows 11 machine. The code in Lessons 02 and 03 was run on that machine with these versions. This section will be updated as each new lesson is tested.
 
 **Why versions are pinned:** MLflow changes between releases, and many tutorials online were written for older versions. This repository targets **MLflow 3.17.0**. If you use a different version, some code or screens may differ.
 
@@ -98,7 +112,7 @@ Then continue with [Lesson 01](01-introduction/README.md).
 
 ## Repository structure
 
-This is the planned structure. Files appear as each lesson is completed.
+This is the planned structure. Lessons 01 to 03 are in the repository, and the rest appear as each lesson is completed.
 
 ```text
 mlflow-for-beginners/
@@ -142,9 +156,10 @@ mlflow-for-beginners/
 | Item | Status |
 |------|--------|
 | Repository design and dependency versions | Done |
-| Root README | Drafted, under review |
-| Lesson 01 | Drafted, under review |
-| Lessons 02 to 08 | Not started |
+| Root README | Done for now, updated as lessons are added |
+| Lesson 01 | Ready |
+| Lessons 02 and 03 | Ready, tested on Windows 11 |
+| Lessons 04 to 08 | Not started |
 | Tests for the mini project | Not started |
 | Real screenshots | Not started |
 | Companion article | Not started |
@@ -161,9 +176,9 @@ Suggestions to make the lessons clearer for beginners are welcome.
 
 ## Author
 
-- **Name:** KVGMA Jayawardane
-- **GitHub:** https://github.com/aradhya534
-- **LinkedIn:** www.linkedin.com/in/aradhya-jayawardane
+- **Name:** _to be added_
+- **GitHub:** _to be added_
+- **LinkedIn:** _to be added_
 
 ## License
 
