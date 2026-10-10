@@ -225,6 +225,8 @@ http://127.0.0.1:5000
 
 You should see the MLflow interface. There is nothing in it yet except a default experiment. That is expected.
 
+> **Two views: GenAI and Model training.** In MLflow 3.17.0, the top-left of the interface (under the version number) has a switch with two options: **GenAI** and **Model training**. GenAI is for tracing LLM and agent applications. This tutorial is about training ordinary machine learning models, so **always use Model training**. If you land on a page with "Traces", "Sessions", or "No data available", you are in the GenAI view. Click **Model training** to switch.
+
 ### Step 9: Run a Python script that logs to the server
 
 Go back to your **first PowerShell window** (the one with `(.venv)` showing, not the server window). Make sure you are in the repository root, then run:
@@ -267,7 +269,7 @@ MLflow may add small symbols in front of the first two lines. The exact text can
 
 ## 6. What to inspect in the MLflow UI
 
-Refresh `http://127.0.0.1:5000` in your browser and check:
+Refresh `http://127.0.0.1:5000` in your browser, make sure **Model training** is selected (see the note in Step 8), and check:
 
 1. An experiment named **setup-check** appears in the list.
 2. Click it. A run named **hello-mlflow** is listed.
