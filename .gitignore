@@ -1,1 +1,19 @@
+# Virtual environment (each person creates their own)
 .venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# MLflow data created when you run the tutorials
+mlflow.db
+mlartifacts/
+mlruns/
+
+# Test and notebook caches
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local settings and secrets: never commit these
+.env
+*.log
