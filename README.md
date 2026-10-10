@@ -161,10 +161,10 @@ Suggestions to make the lessons clearer for beginners are welcome.
 
 ## Author
 
-- **Name:** _to be added_
-- **GitHub:** _to be added_
-- **LinkedIn:** _to be added_
+- **Name:** KVGMA Jayawardane
+- **GitHub:** https://github.com/aradhya534
+- **LinkedIn:** www.linkedin.com/in/aradhya-jayawardane
 
 ## License
 
-See the [LICENSE](LICENSE) file (to be added).
+See the [LICENSE]
